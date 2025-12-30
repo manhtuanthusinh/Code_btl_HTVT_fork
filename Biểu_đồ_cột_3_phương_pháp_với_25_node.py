@@ -117,27 +117,23 @@ def select_path(G, method):
 #     plt.close()
 
 def draw_network(G, paths):
-    # Sử dụng layout cố định để các đường đè lên nhau chuẩn xác
     pos = nx.get_node_attributes(G, "pos") 
-    if not pos: # Nếu graph không có thuộc tính pos, dùng spring_layout
+    if not pos: 
         pos = nx.spring_layout(G, seed=42)
 
     plt.figure(figsize=(10, 8))
-    
-    # Vẽ các node và cạnh nền của toàn bộ đồ thị
+
     nx.draw_networkx_nodes(G, pos, node_size=200, node_color="lightgray", alpha=0.5)
     nx.draw_networkx_edges(G, pos, edge_color="whitesmoke", alpha=0.3)
     nx.draw_networkx_labels(G, pos, font_size=8)
 
-    # Định nghĩa màu sắc riêng cho từng phương pháp
     colors = {
         "Dijkstra": "blue",
         "GA": "green",
         "Hybrid": "red"
     }
 
-    # Vẽ từng đường đi với màu sắc và độ dày khác nhau để dễ quan sát
-    widths = {"Dijkstra": 6, "GA": 4, "Hybrid": 2} # Độ dày giảm dần để tránh bị che hoàn toàn
+    widths = {"Dijkstra": 6, "GA": 4, "Hybrid": 2} 
 
     for method, path in paths.items():
         if path is None: continue
