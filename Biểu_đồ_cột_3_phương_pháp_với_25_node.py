@@ -98,22 +98,65 @@ def select_path(G, method):
 
 
 # ---------- NETWORK VISUALIZATION ----------
-def draw_network(G, paths):
-    pos = nx.spring_layout(G, seed=42)
+# def draw_network(G, paths):
+#     pos = nx.spring_layout(G, seed=42)
 
-    plt.figure(figsize=(8, 6))
-    nx.draw(G, pos, node_size=300, alpha=0.6, with_labels=True)
+#     plt.figure(figsize=(8, 6))
+#     nx.draw(G, pos, node_size=300, alpha=0.6, with_labels=True)
+
+#     for method, path in paths.items():
+#         edges = [(path[i], path[i+1]) for i in range(len(path)-1)]
+#         nx.draw_networkx_edges(G, pos, edgelist=edges, width=3, label=method)
+
+#     plt.title("Optimal Routing Paths Comparison")
+#     plt.legend()
+#     plt.tight_layout()
+#     plt.savefig("./out/network_paths_comparison.png", dpi=300)
+#     plt.close()
+#     plt.savefig(f"./out/{title.replace(' ', '_').lower()}.png", dpi=300)
+#     plt.close()
+
+def draw_network(G, paths):
+    # Sử dụng layout cố định để các đường đè lên nhau chuẩn xác
+    pos = nx.get_node_attributes(G, "pos") 
+    if not pos: # Nếu graph không có thuộc tính pos, dùng spring_layout
+        pos = nx.spring_layout(G, seed=42)
+
+    plt.figure(figsize=(10, 8))
+    
+    # Vẽ các node và cạnh nền của toàn bộ đồ thị
+    nx.draw_networkx_nodes(G, pos, node_size=200, node_color="lightgray", alpha=0.5)
+    nx.draw_networkx_edges(G, pos, edge_color="whitesmoke", alpha=0.3)
+    nx.draw_networkx_labels(G, pos, font_size=8)
+
+    # Định nghĩa màu sắc riêng cho từng phương pháp
+    colors = {
+        "Dijkstra": "blue",
+        "GA": "green",
+        "Hybrid": "red"
+    }
+
+    # Vẽ từng đường đi với màu sắc và độ dày khác nhau để dễ quan sát
+    widths = {"Dijkstra": 6, "GA": 4, "Hybrid": 2} # Độ dày giảm dần để tránh bị che hoàn toàn
 
     for method, path in paths.items():
+        if path is None: continue
+        
         edges = [(path[i], path[i+1]) for i in range(len(path)-1)]
-        nx.draw_networkx_edges(G, pos, edgelist=edges, width=3, label=method)
+        nx.draw_networkx_edges(
+            G, pos, 
+            edgelist=edges, 
+            edge_color=colors.get(method, "black"), 
+            width=widths.get(method, 2), 
+            label=method,
+            alpha=0.8
+        )
 
-    plt.title("Optimal Routing Paths Comparison")
+    plt.title("Optimal Routing Paths Comparison (QoS-aware)")
     plt.legend()
+    plt.axis("off")
     plt.tight_layout()
     plt.savefig("./out/network_paths_comparison.png", dpi=300)
-    plt.close()
-    plt.savefig(f"./out/{title.replace(' ', '_').lower()}.png", dpi=300)
     plt.close()
 
 
